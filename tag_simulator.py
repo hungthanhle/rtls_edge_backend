@@ -3,14 +3,27 @@ import datetime
 import socket
 from random import randint
 import threading
+from db import SessionLocal, Tag
 
 class TagSimulator:
     def __init__(self):
-        self.tags = {
-            "fa451f0755d8": 0,
-            "fb892e1866c9": 0,
-            "fc234a7944b2": 0
-        }
+        # Initialize tags from database
+        db = SessionLocal()
+        db_tags = db.query(Tag).all()
+        self.tags = {}
+        
+        if db_tags:
+            for tag in db_tags:
+                self.tags[tag.tag_id] = tag.last_cnt
+        else:
+            # Fallback to default tags if database is empty
+            self.tags = {
+                "fa451f0755d8": 0,
+                "fb892e1866c9": 0,
+                "fc234a7944b2": 0
+            }
+        db.close()
+        
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.client_socket = None
