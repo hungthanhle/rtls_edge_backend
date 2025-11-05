@@ -72,3 +72,8 @@ curl http://localhost:8000/tag/fa451f0755d8
 ```
 curl -X POST http://localhost:8000/tags -H "Content-Type: application/json" -d '{"id": "fa451f0755d9", "description": "Helmet Tag for worker fa451f0755d9"}'
 ```
+## 3.4. Bonus (Refresh để có new tag cho simulator)  
+https://github.com/hungthanhle/rtls_edge_backend/pull/1  
+```
+curl -X POST http://localhost:8000/simulator/refresh
+```
