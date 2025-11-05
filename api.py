@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, Depends
+import socket
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from db import SessionLocal, Tag, get_db
@@ -56,3 +57,17 @@ def health_check():
         "status": "OK",
         "timestamp": datetime.datetime.now().isoformat()
     }
+
+@app.post("/simulator/refresh")
+def refresh_simulator_tags():
+    """Manually trigger simulator to refresh tags from database"""
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.connect(('localhost', 5000))
+            s.send("REFRESH".encode('utf-8'))
+        return {"status": "success", "message": "Refresh command sent to simulator"}
+    except Exception as e:
+        raise HTTPException(
+            status_code=503,
+            detail=f"Failed to communicate with simulator: {str(e)}"
+        )
